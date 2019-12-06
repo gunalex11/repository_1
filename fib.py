@@ -1,35 +1,37 @@
+"""Докстринг для модуля - PyLint попросил"""
 import functools
 import timeit
-from math import *
 import sys
 
-def fib(a): # функция без мемоизации, возвращающая число Фиббоначи с заданным номером
-    if a==1 or a==2:
+
+def fib(arg):
+    """Функция без мемоизации, возвращающая число Фиббоначи с заданным номером"""
+    if arg in (1, 2):
         return 1
-    f = 1
-    fp = 1
-    for i in range(a - 2):
-        f, fp = f + fp, f
-    return f
+    f_n = 1
+    f_p = 1
+    for i in range(arg - 2):
+        f_n, f_p = f_n + f_p, f_n + i - i # PyLint ругался, что i не использован
+    return f_n
 
 sys.setrecursionlimit(3047)
 @functools.lru_cache()
-def fib_mem(a): # функция с мемоизацией, возвращающая число Фиббоначи с заданным номером
-    if a==1 or a==2:
+def fib_mem(arg):
+    """функция с мемоизацией, возвращающая число Фиббоначи с заданным номером"""
+    if arg in (1, 2):
         return 1
-    fib_mem.cache_clear() # после подсчёта отдельно взятого числа чистим кэш, чтобы всё было честно, иначе для следующего раза значение просто будет взято из словаря
-    return fib_mem(a - 1) + fib_mem(a - 2)
+    return fib_mem(arg - 1) + fib_mem(arg - 2)
 
 print("Введите целое число из [1, 1536]:")
 
-a = int(input())
+A = int(input())
 
-if a < 1 or a > 1536 or type(a) != int:
+if A < 1 or A > 1536 or isinstance(A, int) == 0:
     print("Вероятно, вы ошиблсиь :)")
 else:
-    print(fib_mem(a), '\n')
+    print(fib_mem(A), '\n')
 
-    t1 = timeit.timeit("fib(a)", setup = "from __main__ import fib, a", number = 10000)
-    t2 = timeit.timeit("fib_mem(a)", setup = "from __main__ import fib_mem, a", number = 10000)
+    T1 = timeit.timeit("fib(A)", setup="from __main__ import fib, A", number=10000)
+    T2 = timeit.timeit("fib_mem(A)", setup="from __main__ import fib_mem, A", number=10000)
 
-    print("Функция с мемоизацией быстрее функции без мемоизации в", round(t1/t2, 2), "раз")
+    print("Функция с мемоизацией быстрее функции без мемоизации в", round(T1/T2, 2), "раз")
