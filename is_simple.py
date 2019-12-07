@@ -13,13 +13,13 @@ def is_prime(arg: int) -> bool:
     i = 5 # начнём с 5, так как кратные двум и трём уже проверили
     switch: bool = True # переключатель, чтобы функция знала, когда прибавлять 2, а когда 4
     while i**2 < arg + 1: # смотрим на числа, меньшие sqrt(arg + 1)
-        if arg % i == 0: # если поделилось, нарисуем единичку в индикатор
+        if arg % i == 0:
             return False
-        if switch:
+        if switch: # действуем в соответствии со значением переключателя
             i += 2
         else:
             i += 4
-        switch = bool(abs(switch - 1)) # переключаем переключатель
+        switch = not switch # переключаем переключатель
     return True
 
 A = int(input())
