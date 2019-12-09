@@ -11,8 +11,8 @@ def gcd_eucl(arg_1: int, arg_2: int) -> int: # из предыдущего за�
 def egcd(a_1: int, a_2: int) -> Tuple[Any, Any, Any]:
     """Возвращает НОД и соотношение Безу для двух чисел в виде списка"""
     gcd = gcd_eucl(a_1, a_2)
-    for i in range(int(1e3)):
-        for j in range(int(1e3)):
+    for i in range(10 ** 3):
+        for j in range(10 ** 3):
             if i * a_1 + j * a_2 == gcd:
                 return i, j, gcd
             if -i * a_1 - j * a_2 == gcd:
