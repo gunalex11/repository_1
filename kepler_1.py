@@ -10,7 +10,6 @@ from typing import List, Union
 from numpy import array as vec
 import numpy.linalg
 import matplotlib.pyplot as plt
-import matplotlib.axes
 
 
 class Body:
@@ -59,51 +58,18 @@ class Universe(ABC):
         """Итерация решения задачи Коши. Конечно не присуща вселенной, но тут на своём месте"""
         raise NotImplementedError()
 
-#class UniverseWith3Bodies(Universe):
-#    """
-#    Демо-вселенная.
-#    Кому угодно понятно, что она ненастоящая.
-#    Зато уже есть.
-#    """
-#
-#    def __init__(self,
-#                 G: float,  # гравитационная постоянная
-#                 collision_distance: float  # всё-таки это не точки
-#                 ):
-#        """В начале было... да, а потом тестовая вселенная с пупом мира и двумя камнями"""
-#        self.G = G
-#        self.collision_distance = collision_distance
-#
-#        self.centrum = Body(self, 500.0, vec([0.0, 0.0]), vec([0.0, 0.0]))
-#        self.p_1 = Body(self, 10.0, vec([50.0, 0.0]), vec([0.0, 15.0]))
-#        self.p_2 = Body(self, 10.0, vec([50.0, 40.0]), vec([-7.0, 7.0]))
-#
-#    def gravity_flow_dencity_per_1_1(self, dist: float) -> float:
-#        # будем считать, что отскакивают точки друг от друга резко,
-#        # но стараться не допускать этого
-#        return self.G / dist ** 2 if dist > self.collision_distance else -self.G / dist ** 3
-#
-#    def model_step(self):
-#        self.p_1.apply_force(self.p_1.force_induced_by_other(self.centrum))
-#        self.p_2.apply_force(self.p_2.force_induced_by_other(self.centrum))
-#        self.p_1.advance()
-#        self.p_2.advance()
-
 class UniverseWithBodies(Universe):
     """
-    Будем считать, что это наша вселенная. Кстати, в ней тела действуют и
-    друг на друга.
-    """
+    Будем считать, что это наша вселенная. Кстати, в ней тела действуют и друг на друга."""
 
     def __init__(self,
                  G: float,  # гравитационная постоянная
                  collision_distance: float,  # всё-таки это не точки
-                 bodies: List[Body]
-                 ):
+                  ):
         super().__init__()
         self.G = G
         self.collision_distance = collision_distance
-        self.bodies = bodies
+        self.bodies = []
 
     def gravity_flow_dencity_per_1_1(self, dist: float) -> float:
         # будем считать, что отскакивают точки друг от друга резко,
@@ -118,46 +84,36 @@ class UniverseWithBodies(Universe):
         for i in range(len(self.bodies)):
             self.bodies[i].advance()
 
+    def add_body(self, b: Body):
+        self.bodies.append(b)
 
-#class UniverseWithDimensionsAndBodies(UniverseWithBodies):
-#    """
-#    А это уже вселенная, у которой пространственных измерений, сколько скажут
-#    """
-#
-#    def __init__(self,
-#                 dimensions: int, # сколько пространственных измерений
-#                 G: float,  # гравитационная постоянная
-#                 collision_distance: float,  # всё-таки это не точки
-#                 bodies: List[Body]
-#                 ):
-#        super().__init__(G, collision_distance, bodies)
-#        self.dimensions = dimensions
-#
-#    def gravity_flow_dencity_per_1_1(self, dist: float) -> float:
-#        # Должна использовать self.dimensions
-#        raise NotImplementedError("Запрограммируй меня!")
-
-
+        
 if __name__ == '__main__':
 
-    bodies_hit_the_floor = [Body(UniverseWithBodies, 500.0, vec([0.0, 0.0]), vec([0.0, 0.0])), Body(UniverseWithBodies, 10.0, vec([50.0, 0.0]), vec([0.0, 15.0])), Body(UniverseWithBodies, 10.0, vec([50.0, 40.0]), vec([-7.0, 7.0]))]
-    un = UniverseWithBodies(50, 3.0, bodies_hit_the_floor)
+    un = UniverseWithBodies(50, 3.08)
+    
+    bodies_hit_the_floor = [
+        Body(un, 100.0, vec([0.0, 0.0]), vec([0.0, -14.999999])),
+        Body(un, 100.0, vec([20.0, 0.0]), vec([0.0, 15.0])),
+        Body(un, 100.0, vec([10.0, 10.0]), vec([-15.0, 0.0])),
+        Body(un, 100.0, vec([10.0, -10.0]), vec([15.0, 0.0]))
+    ]
+
+    for i in range(len(bodies_hit_the_floor)):
+        un.add_body(bodies_hit_the_floor[i])
 
     MODEL_DELTA_T = 0.01
-    TIME_TO_MODEL = 10
+    TIME_TO_MODEL = 5
 
-    positions: List[Unioin[float, float]] = []
+    positions: Union[List[List[float]]] = [[[0 for i in range(int(TIME_TO_MODEL / MODEL_DELTA_T))] for a in range(len(un.bodies))], [[0 for i in range(int(TIME_TO_MODEL / MODEL_DELTA_T))] for a in range(len(un.bodies))]]
+
     for stepn in range(int(TIME_TO_MODEL / MODEL_DELTA_T)):
         for i in range(len(un.bodies)):
-            positions.append([un.bodies[i].position[0], un.bodies[i].position[1]])
+            positions[0][i][stepn] = un.bodies[i].position[0]
+            positions[1][i][stepn] = un.bodies[i].position[1]
         un.model_step()
-    
-#    c = plt.Circle((0, 0), 2, color='b')
-    ax: matplotlib.axes.Axes = plt.gca()  # !! typing
-    ax.set_aspect('equal')
-    ax.add_patch(c)
 
-    for i in range(len(positions)):
-        plt.plot(positions[i][0], positions[i][1])
+    for i in range(len(positions[0])):
+        plt.plot(positions[0][i], positions[1][i])
 
     plt.show()
