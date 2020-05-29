@@ -1,0 +1,14 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<u>Функция Эйлера от простого числа</u><br><br>
+
+<form action="/eul" method="POST">
+  <input type="text" value="{{name}}" name="name" />
+  <input type="submit" value="Post!">
+</form>
+
+<p>Функция Эйлера от вашего числа {{ans}}</p>
+
+{% endblock %}
+

@@ -1,0 +1,14 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<u>Проверка числа на простоту</u><br><br>
+
+<form action="/prim" method="POST">
+  <input type="text" value="{{name}}" name="name" />
+  <input type="submit" value="Post!">
+</form>
+
+<p>Ваше число {{ans}}</p>
+
+{% endblock %}
+
